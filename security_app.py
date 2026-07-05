@@ -20,10 +20,8 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 1. Gemini Client Initialize (Super Secure Dynamic Fallback)
-api_key = os.environ.get("GEMINI_API_KEY") or st.secrets.get("GEMINI_API_KEY") or st.secrets.get("api_key")
-
-# Client init properly with direct API Key argument to bypass 401 token issue
+# Simple & direct initialization for Streamlit Secrets
+api_key = st.secrets.get("GEMINI_API_KEY")
 client = genai.Client(api_key=api_key)
 
 def analyze_vulnerabilities_with_gemini(cloud_provider, raw_cloud_logs):
