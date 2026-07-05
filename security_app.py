@@ -20,10 +20,13 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# Simple & direct initialization for Streamlit Secrets
-api_key = st.secrets.get("GEMINI_API_KEY")
-client = genai.Client(api_key=api_key)
+# Shuruat wala direct validation code
+if "GEMINI_API_KEY" in st.secrets:
+    api_key = st.secrets["GEMINI_API_KEY"]
+else:
+    api_key = os.environ.get("GEMINI_API_KEY")
 
+client = genai.Client(api_key=api_key)
 def analyze_vulnerabilities_with_gemini(cloud_provider, raw_cloud_logs):
     system_instruction = (
         f"You are an expert Cloud Security DevSecOps Engineer. Your job is to analyze the provided "
