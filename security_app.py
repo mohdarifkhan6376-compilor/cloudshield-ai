@@ -20,14 +20,10 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 1. Gemini Client Initialize (Secure Way using Environment Variables)
-# Cloud par deploy hone ke baad ye secrets se automatic key uthayega
-api_key = os.environ.get("GEMINI_API_KEY") or st.secrets.get("GEMINI_API_KEY")
+# 1. Gemini Client Initialize (Super Secure Dynamic Fallback)
+api_key = os.environ.get("GEMINI_API_KEY") or st.secrets.get("GEMINI_API_KEY") or st.secrets.get("api_key")
 
-if not api_key:
-    # Agar local me chala rahe hain aur variable nahi mila, to fallback key (sirf temporary test ke liye)
-    api_key = "AQ.Ab8RN6IP3dnqsFoDMG4ctroy_frORXi6lipJ9_bDscHO2iIB0w"
-
+# Client init properly with direct API Key argument to bypass 401 token issue
 client = genai.Client(api_key=api_key)
 
 def analyze_vulnerabilities_with_gemini(cloud_provider, raw_cloud_logs):
