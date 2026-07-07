@@ -12,12 +12,12 @@ st.set_page_config(
     layout="wide"
 )
 
-# Bespoke Premium CSS Injector to fix contrast issues
+# Bespoke Premium CSS Injector to fix all contrast and theme issues
 st.markdown("""
 <style>
     /* Force overall dark background */
     .stApp {
-        background-color: #0e1117 !important;
+        background-color: #090b11 !important;
         color: #e2e8f0 !important;
     }
     
@@ -26,6 +26,28 @@ st.markdown("""
         color: #ffffff !important;
         font-weight: 600 !important;
         font-size: 16px !important;
+    }
+    
+    /* FIX: Raw Cloud Metadata (Input Box) - Complete Dark Black Terminal Style */
+    textarea {
+        background-color: #05070c !important;
+        color: #38bdf8 !important; /* Cyber light blue text for supreme contrast */
+        font-family: 'Fira Code', 'Courier New', monospace !important;
+        font-size: 14px !important;
+        border: 1px solid #1e293b !important;
+        border-radius: 8px !important;
+        padding: 15px !important;
+    }
+    
+    /* Force focused input to have neon glow */
+    textarea:focus {
+        border-color: #0066cc !important;
+        box-shadow: 0 0 10px rgba(0, 102, 204, 0.5) !important;
+    }
+    
+    /* Style the placeholder so it is readable grey */
+    textarea::placeholder {
+        color: #4a5568 !important;
     }
     
     /* Custom Styling for Headings */
@@ -57,16 +79,19 @@ st.markdown("""
     
     /* Metrics box container layout styling */
     .metric-card {
-        background-color: #1a1f2c;
+        background-color: #0f131f;
         padding: 15px;
         border-radius: 10px;
         border-left: 5px solid #0066cc;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
         margin-bottom: 15px;
+        border-top: 1px solid #1e293b;
+        border-right: 1px solid #1e293b;
+        border-bottom: 1px solid #1e293b;
     }
     
     .metric-label {
-        color: #a0aec0 !important;
+        color: #94a3b8 !important;
         font-size: 14px !important;
         font-weight: 600;
         margin-bottom: 5px;
@@ -81,10 +106,12 @@ st.markdown("""
         font-weight: bold;
         border: none;
         padding: 10px;
+        box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3);
     }
     .stButton>button:hover {
         background-color: #0052a3;
         color: white !important;
+        box-shadow: 0 4px 20px rgba(0, 102, 204, 0.5);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -98,11 +125,6 @@ if api_key:
         client = genai.Client(api_key=api_key)
     except Exception:
         client = None
-
-# 1. DYNAMIC THEME ENGINE BASED ON SELECTED INDUSTRY
-# Dynamic Initialization before drawing layout
-if "industry_vertical" not in st.session_state:
-    st.session_state.industry_vertical = "General IT SaaS (SOC 2 / CIS)"
 
 # Main Grid Layout
 col1, col2 = st.columns([1, 2])
@@ -118,7 +140,7 @@ with col1:
     )
     
     st.markdown("<h3 style='color: #ffffff; margin-top:15px;'>📄 Raw Cloud Metadata</h3>", unsafe_allow_html=True)
-    raw_cloud_logs = st.text_area("JSON Metadata Input Label", label_visibility="collapsed", height=250, placeholder="Paste your cloud asset JSON logs here...")
+    raw_cloud_logs = st.text_area("JSON Metadata Input Label", label_visibility="collapsed", height=280, placeholder="Paste your cloud asset JSON logs here...")
 
 # Dynamic Industry Headers Mapping
 if "Pharmaceuticals" in industry_vertical:
@@ -193,7 +215,7 @@ with col2:
                     with m_col3:
                         st.markdown(f"<div class='metric-card'><div class='metric-label'>Compliance Score</div><div class='compliance-text'>{score_val}</div></div>", unsafe_allow_html=True)
                     
-                    # Plotly Interactive Donut Chart with Hover Support
+                    # Plotly Interactive Donut Chart with White Legend Text Support
                     c_num = 2 if "Pharmaceuticals" in industry_vertical else 1
                     h_num = 3 if "Manufacturing" in industry_vertical else 1
                     
@@ -214,7 +236,14 @@ with col2:
                         paper_bgcolor='rgba(0,0,0,0)',
                         plot_bgcolor='rgba(0,0,0,0)',
                         showlegend=True,
-                        font=dict(color='#ffffff')
+                        font=dict(color='#ffffff'),
+                        # FIX: Force the chart legends to be solid bright white for crisp visibility
+                        legend=dict(
+                            font=dict(
+                                color="#ffffff",
+                                size=13
+                            )
+                        )
                     )
                     st.plotly_chart(fig, use_container_width=True)
                     
