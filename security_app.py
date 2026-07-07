@@ -55,7 +55,7 @@ st.markdown("""
         border-radius: 8px !important;
     }
     
-    /* Professional Metrics styling */
+    /* Professional Metrics styling with custom borders */
     div[data-testid="stMetric"] {
         background-color: #0f131f !important;
         border: 1px solid #1e293b !important;
@@ -64,7 +64,7 @@ st.markdown("""
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
     }
     
-    /* Override metric labels to neon colors */
+    /* Override metric labels to neon colors for maximum contrast */
     div[data-testid="stMetricValue"] {
         font-family: 'Inter', sans-serif !important;
         font-size: 26px !important;
@@ -232,7 +232,7 @@ with col2:
                         legend=dict(
                             font=dict(color="#94a3b8"), # Clean grey legend
                             orientation="h",
-                            yanchor="bottom",
+                            yanchor="bottom",   
                             y=-0.3,
                             xanchor="center",
                             x=0.5
