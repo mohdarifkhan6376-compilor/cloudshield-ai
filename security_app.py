@@ -415,7 +415,8 @@ with col2:
             showlegend=True,
             font=dict(color='#ffffff') # FIX: Force all legends and labels to crisp bright WHITE
         )
-        st.plotly_chart(fig, use_container_width=True)
+        # CRITICAL FIX: theme=None blocks Streamlit from forcing dark-grey overrides on legend fonts
+        st.plotly_chart(fig, use_container_width=True, theme=None)
         
         st.markdown("---")
         
