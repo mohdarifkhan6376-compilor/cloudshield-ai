@@ -5,112 +5,91 @@ import plotly.graph_objects as go
 from google import genai
 from google.genai import types
 
+# Streamlit Page Configuration
 st.set_page_config(
-    page_title="CloudShield AI | Enterprise Security Suite",
+    page_title="CloudShield AI | Enterprise CyberSecurity",
     page_icon="🛡️",
     layout="wide"
 )
 
-# Custom Premium Cyber Dark Theme CSS Injector
+# Bespoke Premium CSS Injector to fix contrast issues
 st.markdown("""
 <style>
-    /* Main Background & Text Color */
+    /* Force overall dark background */
     .stApp {
-        background-color: #090b11 !important;
+        background-color: #0e1117 !important;
         color: #e2e8f0 !important;
     }
     
-    /* Hide Streamlit default decorations for a bespoke look */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    
-    /* Custom Sidebar styling */
-    [data-testid="stSidebar"] {
-        background-color: #0f131f !important;
-        border-right: 1px solid #1e293b !important;
+    /* FIX: Force dropdown labels to be crisp white and visible */
+    label[data-testid="stWidgetLabel"] p {
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        font-size: 16px !important;
     }
     
-    /* Headings */
+    /* Custom Styling for Headings */
     h1, h2, h3, h4, h5, h6 {
-        color: #ffffff !important;
-        font-family: 'Inter', sans-serif !important;
+        font-family: 'Inter', sans-serif;
         font-weight: 700 !important;
     }
-    
-    /* Selectboxes and Dropdowns */
-    div[data-baseweb="select"] > div {
-        background-color: #151a2d !important;
-        color: #ffffff !important;
-        border: 1px solid #2d3748 !important;
-        border-radius: 8px !important;
+
+    /* FIX: Force Critical Threats numbers to be bright RED */
+    .critical-text {
+        color: #ff4b4b !important;
+        font-size: 32px !important;
+        font-weight: 800 !important;
+    }
+
+    /* FIX: High Threats number styling (Vibrant Orange) */
+    .high-text {
+        color: #ffa500 !important;
+        font-size: 32px !important;
+        font-weight: 800 !important;
+    }
+
+    /* FIX: Compliance Score number styling (Neon Green) */
+    .compliance-text {
+        color: #2ed573 !important;
+        font-size: 32px !important;
+        font-weight: 800 !important;
     }
     
-    /* Text Inputs & Textareas (Interactive Terminal Style) */
-    textarea, .stTextArea textarea {
-        background-color: #0a0e1a !important;
-        color: #38bdf8 !important; /* Cyber light blue code output */
-        font-family: 'Fira Code', 'Courier New', monospace !important;
-        border: 1px solid #1e293b !important;
-        border-radius: 8px !important;
+    /* Metrics box container layout styling */
+    .metric-card {
+        background-color: #1a1f2c;
+        padding: 15px;
+        border-radius: 10px;
+        border-left: 5px solid #0066cc;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        margin-bottom: 15px;
     }
     
-    /* Professional Metrics styling with custom borders */
-    div[data-testid="stMetric"] {
-        background-color: #0f131f !important;
-        border: 1px solid #1e293b !important;
-        border-radius: 12px !important;
-        padding: 15px 20px !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    .metric-label {
+        color: #a0aec0 !important;
+        font-size: 14px !important;
+        font-weight: 600;
+        margin-bottom: 5px;
     }
-    
-    /* Override metric labels to neon colors for maximum contrast */
-    div[data-testid="stMetricValue"] {
-        font-family: 'Inter', sans-serif !important;
-        font-size: 26px !important;
-        font-weight: bold !important;
-    }
-    
-    /* Audit Button Glow effect */
+
+    /* Primary Action Button Custom Theme */
     .stButton>button {
-        width: 100% !important;
-        background: linear-gradient(135deg, #0284c7, #0369a1) !important;
+        width: 100%;
+        background-color: #0066cc;
         color: white !important;
-        border: none !important;
-        border-radius: 8px !important;
-        font-weight: bold !important;
-        font-size: 16px !important;
-        padding: 10px 0 !important;
-        box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3) !important;
-        transition: all 0.3s ease !important;
+        border-radius: 8px;
+        font-weight: bold;
+        border: none;
+        padding: 10px;
     }
     .stButton>button:hover {
-        background: linear-gradient(135deg, #0369a1, #0284c7) !important;
-        box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5) !important;
-        transform: translateY(-1px) !important;
-    }
-    
-    /* Detailed Remediation Report Card background */
-    .report-card {
-        background-color: #0f131f !important;
-        border: 1px solid #1e293b !important;
-        border-left: 4px solid #38bdf8 !important;
-        border-radius: 8px !important;
-        padding: 20px !important;
-        margin-top: 20px !important;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
-    }
-    
-    /* Warnings and info boxes */
-    div[data-testid="stNotification"] {
-        background-color: #0f131f !important;
-        border: 1px solid #2d3748 !important;
-        border-radius: 8px !important;
+        background-color: #0052a3;
+        color: white !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# 1. Secure API Key Fetching
+# Secure API Key Fetching
 api_key = st.secrets.get("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
 
 client = None
@@ -120,129 +99,127 @@ if api_key:
     except Exception:
         client = None
 
-# App Top Brand Header
-st.markdown("# 🛡️ CloudShield AI <span style='font-size:18px; color:#38bdf8; font-weight:500;'>Enterprise Risk Suite</span>", unsafe_allow_html=True)
-st.markdown("---")
+# 1. DYNAMIC THEME ENGINE BASED ON SELECTED INDUSTRY
+# Dynamic Initialization before drawing layout
+if "industry_vertical" not in st.session_state:
+    st.session_state.industry_vertical = "General IT SaaS (SOC 2 / CIS)"
 
-# Layout Columns (Config Panel Left, Dashboard Visuals Right)
+# Main Grid Layout
 col1, col2 = st.columns([1, 2])
 
 with col1:
-    st.markdown("### ⚙️ Scan Configuration")
+    st.markdown("<h2 style='color: #0066cc;'>⚙️ Scan Settings</h2>", unsafe_allow_html=True)
     cloud_provider = st.selectbox("Select Cloud Provider", ["AWS", "GCP", "Azure"])
     
-    # Industry Vertical Dropdown for target frameworks
     industry_vertical = st.selectbox(
         "Select Industry Vertical", 
-        ["General IT SaaS (SOC 2 / CIS)", "Smart Manufacturing & IoT", "Pharmaceuticals & API Labs (FDA 21 CFR)"]
+        ["General IT SaaS (SOC 2 / CIS)", "Smart Manufacturing & IoT", "Pharmaceuticals & API Labs (FDA 21 CFR)"],
+        key="industry_choice"
     )
     
-    st.markdown("### 📄 Raw Cloud Metadata (Input)")
-    raw_cloud_logs = st.text_area("JSON Metadata Input", height=280, placeholder="Paste your cloud asset JSON logs here...")
+    st.markdown("<h3 style='color: #ffffff; margin-top:15px;'>📄 Raw Cloud Metadata</h3>", unsafe_allow_html=True)
+    raw_cloud_logs = st.text_area("JSON Metadata Input Label", label_visibility="collapsed", height=250, placeholder="Paste your cloud asset JSON logs here...")
 
-def analyze_vulnerabilities_with_gemini(cloud_provider, industry, logs_data):
+# Dynamic Industry Headers Mapping
+if "Pharmaceuticals" in industry_vertical:
+    header_title = "<h1 style='color: #2ed573;'>🧪 CloudShield AI | Pharma API Labs Suite 🧬</h1>"
+    critical_val, high_val, score_val = "2 Detected", "1 Detected", "68%"
+elif "Manufacturing" in industry_vertical:
+    header_title = "<h1 style='color: #ffa500;'>🏭 CloudShield AI | Smart Manufacturing IoT Suite ⚙️</h1>"
+    critical_val, high_val, score_val = "1 Detected", "3 Detected", "74%"
+else:
+    header_title = "<h1 style='color: #0066cc;'>💻 CloudShield AI | General Enterprise IT Suite 🛡️</h1>"
+    critical_val, high_val, score_val = "1 Detected", "1 Detected", "80%"
+
+def analyze_vulnerabilities_with_gemini(provider, industry, logs):
     if not client:
         return "❌ Error: AI Engine core initialization failed. Please check your API key secrets."
         
     system_instruction = (
         f"You are an expert Cloud Security DevSecOps Engineer specializing in '{industry}'. "
-        f"Your job is to analyze the provided '{cloud_provider}' asset metadata for security vulnerabilities "
-        f"based on standard frameworks relevant to '{industry}' (like CIS Benchmarks, ISO 27001, or FDA 21 CFR Part 11).\n\n"
-        "For EACH vulnerability found, you must provide EXACTLY this clean structure without adding any extra conversational text:\n"
+        f"Analyze the provided '{provider}' asset metadata for safety flaws based on framework rules relevant to '{industry}'.\n\n"
+        "Structure exactly like this:\n"
         "### 🔍 Issue: [Resource ID] - [Short Vulnerability Name]\n"
-        "**💥 Risk Explanation:** [Provide a high-impact business and technical explanation of the risk]\n"
-        "**💻 AWS/GCP CLI Command to Fix:**\n"
+        "**💥 Risk Explanation:** [Technical risk context]\n"
+        "**💻 AWS CLI Command to Fix:**\n"
         "```bash\n"
-        "[Insert clean, direct, copy-pasteable CLI command here]\n"
+        "[CLI command here]\n"
         "```\n"
         "**🛠️ Terraform Snippet to Remediate:**\n"
         "```hcl\n"
-        "[Insert direct, copy-pasteable Terraform resource block here]\n"
+        "[Terraform block here]\n"
         "```\n"
         "---"
     )
-    
     try:
         response = client.models.generate_content(
             model='gemini-2.5-flash',
-            contents=f"Analyze these logs and give industry-specific remediations:\n{logs_data}",
-            config=types.GenerateContentConfig(
-                system_instruction=system_instruction,
-                temperature=0.2
-            )
+            contents=f"Analyze logs:\n{logs}",
+            config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.2)
         )
-        if response and response.text:
-            return response.text
-        else:
-            return "⚠️ AI engine completed the scan but returned an empty assessment."
+        return response.text if response.text else "⚠️ Empty response returned."
     except Exception as e:
-        return f"❌ Connection Error during live scan: {str(e)}"
+        return f"❌ Connection Error: {str(e)}"
 
 with col2:
-    st.markdown("### 📊 Audit Results & Insights Dashboard")
+    st.markdown(header_title, unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #ffffff;'>📊 Audit Results & Insights Dashboard</h3>", unsafe_allow_html=True)
     
-    # Run Audit Trigger
     if st.button("🚀 Run Industry-Targeted Security Audit"):
         clean_input = raw_cloud_logs.strip()
         
-        # Guardrail 1: Empty Input Check
         if not clean_input:
-            st.warning("⚠️ Input required: Please paste your raw cloud metadata JSON logs to trigger the automated security audit.")
+            st.warning("⚠️ Input required: Please paste your raw cloud metadata JSON logs.")
         else:
-            # Guardrail 2: JSON Validation Check
-            is_valid_json = True
             try:
                 json.loads(clean_input)
+                is_valid = True
             except json.JSONDecodeError:
-                is_valid_json = False
-            
-            if not is_valid_json:
-                st.error("🛑 Format Error: The provided input is not a valid JSON structure. Please check for missing brackets or quotes.")
+                is_valid = False
+                
+            if not is_valid:
+                st.error("🛑 Format Error: The provided input is not a valid JSON structure.")
             else:
-                with st.spinner("🕵️‍♂️ CloudShield AI is processing logs and mapping industry compliance metrics..."):
+                with st.spinner("🕵️‍♂️ Processing logs and mapping metrics..."):
                     
-                    st.markdown("#### 🚨 Real-Time Security Posture")
+                    st.markdown("<h4 style='color: #ffffff; margin-top: 15px;'>🚨 Real-Time Security Posture</h4>", unsafe_allow_html=True)
+                    
+                    # Custom High Contrast Metric Layout Blocks using HTML Injection
                     m_col1, m_col2, m_col3 = st.columns(3)
+                    with m_col1:
+                        st.markdown(f"<div class='metric-card'><div class='metric-label'>Critical Threats</div><div class='critical-text'>{critical_val}</div></div>", unsafe_allow_html=True)
+                    with m_col2:
+                        st.markdown(f"<div class='metric-card'><div class='metric-label'>High Threats</div><div class='high-text'>{high_val}</div></div>", unsafe_allow_html=True)
+                    with m_col3:
+                        st.markdown(f"<div class='metric-card'><div class='metric-label'>Compliance Score</div><div class='compliance-text'>{score_val}</div></div>", unsafe_allow_html=True)
                     
-                    # Logic to set severity and score dynamic variables for visual contrast
-                    if "Pharmaceuticals" in industry_vertical:
-                        critical, high, score = 2, 1, "68%"
-                    elif "Manufacturing" in industry_vertical:
-                        critical, high, score = 1, 3, "74%"
-                    else:
-                        critical, high, score = 1, 1, "80%"
-                        
-                    m_col1.metric("Critical Threats", f"{critical} Detected")
-                    m_col2.metric("High Threats", f"{high} Detected")
-                    m_col3.metric("Compliance Score", score)
+                    # Plotly Interactive Donut Chart with Hover Support
+                    c_num = 2 if "Pharmaceuticals" in industry_vertical else 1
+                    h_num = 3 if "Manufacturing" in industry_vertical else 1
                     
-                    # Interactive Plotly Pie/Donut Chart configured for Dark Theme
-                    labels = ['Critical Threats', 'High Threats', 'Low Risk / Secure Assets']
-                    values = [critical, high, 8]
-                    colors = ['#ef4444', '#f97316', '#22c55e'] # Clean dark neon red, orange, green
+                    labels = ['Critical Threats', 'High Threats', 'Low Risk Assets']
+                    values = [c_num, h_num, 8]
+                    colors = ['#ff4b4b', '#ffa500', '#2ed573']
                     
-                    fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.5)])
+                    fig = go.Figure(data=[go.Pie(
+                        labels=labels, 
+                        values=values, 
+                        hole=.4,
+                        hovertemplate="<b>%{label}</b><br>Count: %{value}<br>Ratio: %{percent}<extra></extra>"
+                    )])
                     fig.update_traces(hoverinfo='label+percent', textinfo='value', marker=dict(colors=colors))
                     fig.update_layout(
                         margin=dict(t=10, b=10, l=10, r=10),
-                        height=220,
-                        paper_bgcolor='rgba(0,0,0,0)', # Transparent bg
-                        plot_bgcolor='rgba(0,0,0,0)', # Transparent plot
-                        font=dict(color="#ffffff"), # Force white text labels
-                        legend=dict(
-                            font=dict(color="#94a3b8"), # Clean grey legend
-                            orientation="h",
-                            yanchor="bottom",   
-                            y=-0.3,
-                            xanchor="center",
-                            x=0.5
-                        )
+                        height=240,
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        showlegend=True,
+                        font=dict(color='#ffffff')
                     )
                     st.plotly_chart(fig, use_container_width=True)
                     
-                    # Live Gemini Audit Execution
+                    # Live Gemini Audit Result Trigger
                     audit_result = analyze_vulnerabilities_with_gemini(cloud_provider, industry_vertical, clean_input)
-                    
                     st.markdown("---")
-                    st.markdown("### 📑 Detailed Remediation Report")
-                    st.markdown(f"<div class='report-card'>{audit_result}</div>", unsafe_allow_html=True)
+                    st.markdown("<h3 style='color: #ffffff;'>📑 Detailed Remediation Report</h3>", unsafe_allow_html=True)
+                    st.markdown(audit_result)
