@@ -1,6 +1,4 @@
 streamlit
 plotly
-google-genai
-streamlit
-plotly
 fpdf2
+google-genai
