@@ -35,12 +35,13 @@ st.markdown("""
         font-weight: 700 !important;
     }
 
-    /* Input text-area terminal theme styling */
+    /* FIX: Input text-area clean white background with bold black text */
     textarea {
-        background-color: #05070a !important;
-        color: #38bdf8 !important; /* Cyber Blue font for code/JSON input */
+        background-color: #ffffff !important;
+        color: #000000 !important; /* Bold black font for readability */
         font-family: 'Courier New', Courier, monospace !important;
-        border: 1px solid #1e293b !important;
+        font-weight: 600 !important;
+        border: 2px solid #1e293b !important;
     }
 
     /* Critical Threats numbers (Vibrant Crimson RED) */
@@ -391,7 +392,7 @@ with col2:
         with m_col3:
             st.markdown(f"<div class='metric-card'><div class='metric-label'>Compliance Score</div><div class='compliance-text'>{score_val}</div></div>", unsafe_allow_html=True)
         
-        # Plotly Interactive Donut Chart Redraw
+        # Plotly Interactive Donut Chart Redraw with crisp WHITE legend fonts
         c_num = 2 if "Pharmaceuticals" in st.session_state.current_industry else 1
         h_num = 3 if "Manufacturing" in st.session_state.current_industry else 1
         
@@ -412,7 +413,7 @@ with col2:
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             showlegend=True,
-            font=dict(color='#ffffff')
+            font=dict(color='#ffffff') # FIX: Force all legends and labels to crisp bright WHITE
         )
         st.plotly_chart(fig, use_container_width=True)
         
